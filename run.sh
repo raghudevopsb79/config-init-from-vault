@@ -22,7 +22,13 @@ fi
 
 
 vault login -tls-skip-verify $VAULT_TOKEN &>/dev/null
-tail -f /dev/null
-vault kv get roboshop-${ENV}/${APP_NAME} | sed -n '/Data/, $ p' | sed -e '1,3 d' | awk '{print "export "$1"="$2}' >/data/secrets
-cat /data/secrets
+vault kv get roboshop-${ENV}/${APP_NAME} | sed -n '/Data/, $ p' | sed -e '1,3 d' | awk '{print $1"="$2}' >/tmp/secret
+mkdir -p secrets
+for i in `cat /tmp/secret`; do
+  SECRET=$(echo $i | awk -F = '{print $1}')
+  VALUE=$(echo $i | awk -F = '{print $2}')
+  echo $VALUE >/secrets/$SECRET
+done
+kubectl delete secret $APP_NAME
+kubectl create secret generic $APP_NAME --from-file=./secrets
 
