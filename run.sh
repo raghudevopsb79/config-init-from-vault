@@ -27,7 +27,7 @@ mkdir -p secrets
 for i in `cat /tmp/secret`; do
   SECRET=$(echo $i | awk -F = '{print $1}')
   VALUE=$(echo $i | awk -F = '{print $2}')
-  echo $VALUE >/secrets/$SECRET
+  echo -n $VALUE >/secrets/$SECRET
 done
 kubectl delete secret $APP_NAME
 kubectl create secret generic $APP_NAME --from-file=./secrets
