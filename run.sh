@@ -22,7 +22,7 @@ fi
 
 
 vault login -tls-skip-verify $VAULT_TOKEN &>/dev/null
-vault kv get roboshop-${ENV}/${APP_NAME} | sed -n '/Data/, $ p' | sed -e '1,3 d' | awk '{print $1"="$2}' >/tmp/secret
+vault kv get -tls-skip-verify roboshop-${ENV}/${APP_NAME} | sed -n '/Data/, $ p' | sed -e '1,3 d' | awk '{print $1"="$2}' >/tmp/secret
 mkdir -p secrets
 for i in `cat /tmp/secret`; do
   SECRET=$(echo $i | awk -F = '{print $1}')
